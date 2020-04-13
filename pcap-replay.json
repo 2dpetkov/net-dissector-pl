@@ -1,0 +1,103 @@
+{
+    "input":
+    [
+        {"name":"eth_type","offset":12,"length":2,"unpack":"n"},
+    
+        {"name":"ip_ver_ihl","offset":14,"length":1,"unpack":"C"},
+        {"name":"ip_version","expr":"$ip_ver_ihl >> 4"},
+        {"name":"ip_ihl_bytes","expr":"($ip_ver_ihl & 0x0f)*32/8"},
+        
+        {"name":"ip_total_len","offset":16,"length":2,"unpack":"n"},
+        {"name":"ip_protocol","offset":23,"length":1,"unpack":"C"},
+        
+        {"name":"ip_src","offset":26,"length":4,"unpack":"C4"},
+        {"name":"ip_dest","offset":30,"length":4,"unpack":"C4"},
+        
+        {"name":"tcp_start","expr":"14+$ip_ihl_bytes"},
+        
+        {
+            "name":"tcp_src_port",
+            "offset":"$tcp_start+0",
+            "length":2,"unpack":"n"
+        },
+        {
+            "name":"tcp_dest_port",
+            "offset":"$tcp_start+2",
+            "length":2,"unpack":"n"
+        },
+        {
+            "name":"tcp_sec_num",
+            "offset":"$tcp_start+4",
+            "length":4,"unpack":"n"
+        },
+        {
+            "name":"tcp_ack_num",
+            "offset":"$tcp_start+8",
+            "length":4,"unpack":"n"
+        },
+        {
+            "name":"tcp_hl_flags",
+            "offset":"$tcp_start+12",
+            "length":2,"unpack":"n"
+        },
+        {"name":"tcp_hl_bytes","expr":"($tcp_hl_flags >> 12)*32/8"},
+        {"name":"tcp_flags","expr":"$tcp_hl_flags & 0x1ff"},
+        {"name":"tcp_ack","expr":"($tcp_flags >> 4) & 0x01"},
+        {"name":"tcp_psh","expr":"($tcp_flags >> 3) & 0x01"},
+        {"name":"tcp_rst","expr":"($tcp_flags >> 2) & 0x01"},
+        {"name":"tcp_syn","expr":"($tcp_flags >> 1) & 0x01"},
+        {"name":"tcp_fin","expr":"($tcp_flags >> 0) & 0x01"},
+        {
+            "name":"tcp_win",
+            "offset":"$tcp_start+14",
+            "length":2,"unpack":"n"
+        },
+        
+        {"name":"data_start","expr":"$tcp_start + $tcp_hl_bytes"},
+        {"name":"data_len","expr":"$ip_total_len - $ip_ihl_bytes - $tcp_hl_bytes"},
+
+        {
+            "name":"raw_data",
+            "offset":"$data_start"
+        }
+    ],
+    
+    "output":
+    [
+        {
+            "condition":
+                "($tcp_src_port == 54194 || $tcp_dest_port == 54194) && $data_len == 0",
+            "json":
+            [
+                [
+                    "join(':',join('.',@{$ip_src}),$tcp_src_port)",
+                    "join(':',join('.',@{$ip_dest}),$tcp_dest_port)",
+                    "join('-',($tcp_syn and 'SYN' or ''),($tcp_psh and 'PSH' or ''),($tcp_rst and 'RST' or ''),($tcp_fin and 'FIN' or ''),($tcp_ack and 'ACK' or ''))",
+                    "join(' ',('sec='.$tcp_sec_num),('ack='.$tcp_ack_num),('win='.$tcp_win),('len='.$data_len))"
+                ]
+            ]
+        },
+        {
+            "condition":
+                "($tcp_src_port == 54194 || $tcp_dest_port == 54194) && $data_len != 0",
+            "json":
+            [
+                [
+                    "join(':',join('.',@{$ip_src}),$tcp_src_port)",
+                    "join(':',join('.',@{$ip_dest}),$tcp_dest_port)",
+                    "join('-',($tcp_syn and 'SYN' or ''),($tcp_psh and 'PSH' or ''),($tcp_rst and 'RST' or ''),($tcp_fin and 'FIN' or ''),($tcp_ack and 'ACK' or ''))",
+                    "join(' ',('sec='.$tcp_sec_num),('ack='.$tcp_ack_num),('win='.$tcp_win),('len='.$data_len))"
+                ],
+                ["$raw_data"]
+            ]
+        },
+        {
+            "condition":
+                "false && ($tcp_src_port == 54194 || $tcp_dest_port == 54194) && $data_len != 0",
+            "json":
+            [
+                "$raw_data"
+            ]
+        }
+    ]
+}

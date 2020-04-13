@@ -5,3 +5,10 @@ perl-base
 libclone-perl
 libjson-perl
 libjson-xs-perl
+
+<CPAN>
+Net::Pcap 
+Net::PcapUtils
+PerlIO::encoding 
+AutoLoader
+Clone

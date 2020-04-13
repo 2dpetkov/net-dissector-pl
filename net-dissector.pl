@@ -32,7 +32,8 @@ sub sig_handler {
 
 sub print_usage { 
     print 
-        "Usage: ".$0." [OPTIONS] CONFIG_FILE\n"
+        "\n"
+        ."Usage: ".$0." [OPTIONS] CONFIG_FILE\n"
         ."  Dissects sniffed Network packets and outputs parsed fields in JSON format."
         ."\n\n"
         ."CONFIG_FILE: \n"
@@ -40,29 +41,85 @@ sub print_usage {
         ."  and outputted."
         ."\n\n"
         ."Options:\n"
-        ."  -i, --interface=INTERFACE     Network Interface to stiff on. Default: 'any'.\n"
+        ."  -l, --list                    List all available network devices end exit.\n"
+        ."\n"
+        ."  -i, --interface=INTERFACE     Network Interface to sniff on. Either -i or -r must be specified.\n"
+        ."                                  Example (Windows): -i \\Device\\NPF_{00000000-0000-0000-0000-000000000000}\n"
+        ."                                  Example (Linux):   -i eth0\n"
+        ."  -s, --savefile=FILE           A pcap file to read. Either -i or -r must be specified.\n"
         ."  -p, --promisc                 Brings the Interface to promiscuous mode. Default behavior.\n"
         ."  -nop, --nopromisc             Disables promiscuous mode for the Interface.\n"
         ."  -f, --filter=FILTER           Filter to pass to libpcap.\n"
-        ."                                Example: --filter='port 53' - capture DNS traffic only.\n"
+        ."                                  Example: --filter='port 53' - capture DNS traffic only.\n"
+        ."\n"
         ."  -h, --help                    Print this help message and exit.\n";
 }
 
+sub get_alldevs {
+    my %devinfo;
+    my $err = "";
+    Net::Pcap::pcap_findalldevs(\%devinfo, \$err) or die "Error finding all devices: $err \n";
+    return %devinfo;
+}
+
 my $help = '';
-my $interface = 'any';
+my $list = 0;
+my $interface = '';
+my $savefile = '';
 my $promisc = 1;
 my $filter = '';
 GetOptions (
     'help' => \$help, 
+    'list' => \$list, 
     'interface=s' => \$interface, 
+    'savefile=s' => \$savefile, 
     'promisc!' => \$promisc,
     'filter=s' => \$filter );
 
 my ($config_fname) = @ARGV;
 
-if ($help or !defined $config_fname) {
+#---------------------------------------------------------------------------
+# List Interfaces
+
+my %devinfo = get_alldevs();
+
+if ($list) {
+    for my $dev (keys %devinfo) {
+        print "$dev $devinfo{$dev}\n";
+    }
+    exit 0;
+}
+
+#---------------------------------------------------------------------------
+# Help
+
+if ($help) {
     print_usage();
     exit 0; 
+}
+
+if (!defined $config_fname) {
+    print "--------------------------\n";
+    print "ERROR: Missing CONFIG_FILE\n";
+    print "--------------------------\n";
+    print_usage();
+    exit 1; 
+}
+
+if (($interface eq "" and $savefile eq "")) {
+    print "----------------------------------------\n";
+    print "ERROR: Either -i or -s must be specified\n";
+    print "----------------------------------------\n";
+    print_usage();
+    exit 1; 
+}
+
+if ($interface ne "" and $savefile ne "") {
+    print "----------------------------------------------------\n";
+    print "ERROR: Both -i or -s cannot be used at the same time\n";
+    print "----------------------------------------------------\n";
+    print_usage();
+    exit 1; 
 }
 
 #---------------------------------------------------------------------------
@@ -73,6 +130,7 @@ my $config = JsonUtils::fparse($config_fname);
 my $err_msg = Net::PcapUtils::loop(
     \&PacketProcessor::process, USERDATA => $config,
     DEV => $interface,
+    SAVEFILE => $savefile,
     PROMISC => $promisc,
     FILTER => $filter,
     SNAPLEN => 65536 );

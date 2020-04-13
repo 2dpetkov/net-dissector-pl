@@ -8,12 +8,10 @@ Npcap library (replacing WinPcap)
 https://nmap.org/npcap/
 
 
-D:\home\net-dissector>pp net-dissector.pl -o net-dissector.exe -B -M PerlIO::encoding -M Net::Pcap -M Net::PcapUtils -M JsonUtils
-C:\Strawberry\perl\site\bin/pp: Cannot find module JsonUtils.pm (specified with -M)
-
-
-D:\home\net-dissector>pp net-dissector.pl -o net-dissector.exe -B -M PerlIO::encoding -M Net::Pcap -M Net::PcapUtils -M AutoLoader -M Clone libs\PacketProcessor.pm libs\JsonUtils.pm
-Use of uninitialized value in pattern match (m//) at C:/Strawberry/perl/site/lib/PAR/Packer.pm line 795.
-Use of uninitialized value in pattern match (m//) at C:/Strawberry/perl/site/lib/PAR/Packer.pm line 795.
-
 pp net-dissector.pl -o net-dissector.exe -M PerlIO::encoding -M Net::Pcap -M Net::PcapUtils -M AutoLoader -M Clone -I libs
+
+#Build .exe and run with parameter
+pp net-dissector.pl -o net-dissector.exe -M PerlIO::encoding -M Net::Pcap -M Net::PcapUtils -M AutoLoader -M Clone -I libs -r conf-example.json
+
+# OK!
+pp net-dissector.pl -o net-dissector.exe -I libs
