@@ -1,0 +1,30 @@
+From a090a70d3247361c2bdd1303411b8428f7f3eccf Mon Sep 17 00:00:00 2001
+From: Max Maischein <corion@corion.net>
+Date: Tue, 22 Mar 2011 22:11:41 +0100
+Subject: [PATCH 5/5] On Win32, avoid duplicate HAVE_REMOVE compilation for stubs
+
+---
+ stubs.inc |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+
+diff --git a/stubs.inc b/stubs.inc
+index 2cc292e..8ac5400 100644
+--- a/stubs.inc
++++ b/stubs.inc
+@@ -516,10 +516,13 @@ HANDLE pcap_getevent(pcap_t *p) {
+ #ifdef _MSC_VER
+ #pragma message( "Warning: the function pcap_setsampling() is not available" )
+ #endif
++
++#ifndef HAVE_REMOTE
+ struct pcap_samp {
+     int method;
+     int value;
+ };
++#endif
+ 
+ struct pcap_samp *pcap_setsampling(pcap_t *p);
+ struct pcap_samp *pcap_setsampling(pcap_t *p) {
+-- 
+1.6.5.1.1367.gcd48
+

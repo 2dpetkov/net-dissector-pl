@@ -1,0 +1,25 @@
+From e1525c5cdae88dbed165394a821aa0e3ff207844 Mon Sep 17 00:00:00 2001
+From: Max Maischein <corion@corion.net>
+Date: Tue, 22 Mar 2011 21:58:10 +0100
+Subject: [PATCH 4/5] Use the Windows-name for /dev/null
+
+---
+ Makefile.PL |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/Makefile.PL b/Makefile.PL
+index ca76b8e..c8cab5b 100644
+--- a/Makefile.PL
++++ b/Makefile.PL
+@@ -290,7 +290,7 @@ BEGIN {
+     $has_Win32 = !$@;
+     $is_Win32 = ($^O eq 'MSWin32');
+     if ($is_Win32) {
+-        $DEVNULL = 'DEVNULL';
++        $DEVNULL = 'NUL:';
+     } else {
+         $DEVNULL = eval { File::Spec->devnull };
+         if ($@) { $DEVNULL = '/dev/null' }
+-- 
+1.6.5.1.1367.gcd48
+
