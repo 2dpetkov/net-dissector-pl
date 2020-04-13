@@ -1,6 +1,11 @@
 # net-dissector-pl
 A Perl utility that uses LibPcap and a set of input JSON rules to parse packets captured on a network interface (or a .pcap file), and to extract certain elements of the stream into a set of JSON objects
 
+## Check out the Help
+```
+./net-dissector.pl -h
+```
+
 ## Running on windows
 On Windows, you can run this under WSL, but bear in mind that sniffing on network interfaces within WSL isn't easy, so you might want to parse already captured .pcap files
 
