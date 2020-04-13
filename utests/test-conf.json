@@ -1,0 +1,41 @@
+{
+    "input":
+    [
+        {
+            "name":"var_value",
+            "value":"test 123"
+        },
+        {
+            "name":"var_expr",
+            "expr":"${var1} * 10"
+        },
+        {
+            "name":"var_unpack",
+            "offset":"15",
+            "length":"${other_var}",
+            "unpack":"H*"
+        },
+        {
+            "name":"var_regex",
+            "offset":5,
+            "length":100,
+            "regex":"[hH]ost:(.*)\\r\\n"
+        }
+    ],
+    
+    "output":
+    [
+        {
+            "condition":"$var_value == \"test 123\"",
+            "json":"$var_value"
+        },
+        {
+            "condition":"$var_expr == 20",
+            "json":{"val":"$var_value","int":"$var_expr"}
+        },
+        {
+            "condition":1,
+            "json":"@var_regex"
+        }
+    ]
+}

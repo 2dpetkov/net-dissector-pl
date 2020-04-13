@@ -1,0 +1,7 @@
+http://search.cpan.org/dist/Net-PcapUtils/PcapUtils.pm
+
+libnet-pcap-perl
+perl-base
+libclone-perl
+libjson-perl
+libjson-xs-perl

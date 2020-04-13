@@ -1,0 +1,84 @@
+{
+    "input":
+    [
+        {"name":"timestamp", "expr":"localtime(time)"},
+    
+        {"name":"eth_dest","offset":0,"length":6,"unpack":"(H2)6"},
+        {"name":"eth_source","offset":6,"length":6,"unpack":"(H2)6"},
+        {"name":"eth_type","offset":12,"length":2,"unpack":"n"},
+    
+        {"name":"ip_ver_ihl","offset":14,"length":1,"unpack":"C"},
+        {"name":"ip_version","expr":"$ip_ver_ihl >> 4"},
+        {"name":"ip_ihl_bytes","expr":"($ip_ver_ihl & 0x0f)*32/8"},
+        
+        {"name":"ip_protocol","offset":23,"length":1,"unpack":"C"},
+        
+        {"name":"ip_src","offset":26,"length":4,"unpack":"C4"},
+        {"name":"ip_dest","offset":30,"length":4,"unpack":"C4"},
+        
+        {"name":"tcp_start","expr":"14+$ip_ihl_bytes"},
+        
+        {
+            "name":"tcp_src_port",
+            "offset":"$tcp_start+0",
+            "length":2,"unpack":"n"
+        },
+        {
+            "name":"tcp_dest_port",
+            "offset":"$tcp_start+2",
+            "length":2,"unpack":"n"
+        },
+        
+        {
+            "name":"tcp_hl_flags",
+            "offset":"$tcp_start+12",
+            "length":2,"unpack":"n"
+        },
+        {"name":"tcp_hl_bytes","expr":"($tcp_hl_flags >> 12)*32/8"},
+        {"name":"tcp_flags","expr":"$tcp_hl_flags & 0x1ff"},
+        {"name":"tcp_ack","expr":"($tcp_flags >> 4) & 0x01"},
+        {"name":"tcp_psh","expr":"($tcp_flags >> 3) & 0x01"},
+        {"name":"tcp_rst","expr":"($tcp_flags >> 2) & 0x01"},
+        {"name":"tcp_syn","expr":"($tcp_flags >> 1) & 0x01"},
+        {"name":"tcp_fin","expr":"($tcp_flags >> 0) & 0x01"},
+
+        
+        {"name":"data_start","expr":"$tcp_start+$tcp_hl_bytes"},
+        
+        {
+            "name":"host_header",
+            "offset":"$data_start",
+            "regex":".*[hH]ost: ([^\r\n]*)\r\n"
+        },
+        {
+            "name":"get_url",
+            "offset":"$data_start",
+            "regex":"^GET (.*) HTTP/1.1\r\n"
+        }
+    ],
+    
+    "output":
+    [
+        {
+            "condition":
+                "$eth_type == 0x0800 && $ip_protocol == 6 && $tcp_ack && $tcp_psh && @{$get_url}",
+            "json":
+            [
+                "$timestamp",
+                {
+                    "mac-src":"join(\":\",@{$eth_source})",
+                    "mac-dest":"join(\":\",@{$eth_dest})"
+                },
+                {
+                    "ip-src":"join(\".\",@{$ip_src})",
+                    "ip-dest":"join(\".\",@{$ip_dest})"
+                },
+                {
+                    "tcp-src":"$tcp_src_port",
+                    "tcp-dest":"$tcp_dest_port"
+                },
+                {"GET":"$get_url","HOST":"$host_header"}
+            ]
+        }
+    ]
+}

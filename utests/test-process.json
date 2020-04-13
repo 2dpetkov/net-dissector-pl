@@ -1,0 +1,29 @@
+{
+    "input":
+    [
+        {"name":"var1", "value":"value 1"},
+        {"name":"var2", "regex":"(\\d\\d\\d)"},
+        {"name":"var3", "value":"test\ntest"},
+        {"name":"var4"}
+    ],
+    
+    "output":
+    [
+        {
+            "condition":1,
+            "json":"$var1"
+        },
+        {
+            "condition":1,
+            "json":"$var2"
+        },
+        {
+            "condition":1,
+            "json":"$var3"
+        },
+        {
+            "condition":1,
+            "json":"$var4"
+        }
+    ]
+}
