@@ -1,5 +1,1 @@
-http://search.cpan.org/dist/Net-PcapUtils/PcapUtils.pm
-
-libjson-perl
-libnet-pcap-perl
-libclone-perl
+libjson-perl libnet-pcap-perl libclone-perl
