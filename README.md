@@ -46,7 +46,7 @@ cd utests;
 ```
 
 ## From perl to exe
-[PAR::Packer](https://metacpan.org/pod/PAR::Packer)
+Using [PAR::Packer](https://metacpan.org/pod/PAR::Packer)
  
 ```
 pp net-dissector.pl -o net-dissector.exe -M PerlIO::encoding -M Net::Pcap -M Net::PcapUtils -M AutoLoader -M Clone -I libs
