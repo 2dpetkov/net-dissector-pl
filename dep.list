@@ -1,14 +1,5 @@
 http://search.cpan.org/dist/Net-PcapUtils/PcapUtils.pm
 
-libnet-pcap-perl
-perl-base
-libclone-perl
 libjson-perl
-libjson-xs-perl
-
-<CPAN>
-Net::Pcap 
-Net::PcapUtils
-PerlIO::encoding 
-AutoLoader
-Clone
+libnet-pcap-perl
+libclone-perl
