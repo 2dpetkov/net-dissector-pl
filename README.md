@@ -29,6 +29,15 @@ libtest-output-perl
 ./net-dissector.pl -h
 ```
 
+## Example usage
+If your active network interface is eth0, run  
+```
+sudo ./net-dissector.pl -i eth0 -p examples/conf-example.json
+```
+
+Then open a web browser and access a website, that is not using HTTPS. The script will output some captured and dissected packets on the stdout.
+The example JSON parser simply extracts some data from the captured HTTP (not HTTPS) requests (not responses), including some fields from the underlying TCP packets, and suggests a way to arrange them in the output.
+
 ## Running the Unit tests
 ```
 cd utests;
