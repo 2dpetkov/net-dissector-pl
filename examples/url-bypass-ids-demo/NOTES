@@ -5,7 +5,10 @@
     ./free-url-bypass-ids/ids_server.pl localhost 5050
 
 3. Start the NedDissector and redirect output to the IDS over the network:
-    sudo ../net-dissector.pl -i lo -f 'port 8080' conf-url-bypass-monitor.json | nc 127.0.0.1 5050
+    sudo ../../net-dissector.pl -i lo -f 'port 8080' conf-url-bypass-monitor.json | nc 127.0.0.1 5050
 
 4. Request a paid URL from MSISDN that has no money:
     ./free-url-bypass-attack/http-client.pl www.free.url www.paid.url 555-has-no-money-412
+
+5. Example IDS output
+    <TIMESTAMP>: URL Bypass Attack detected from IP [127.0.0.1], MSISND [555-has-no-money-412]
