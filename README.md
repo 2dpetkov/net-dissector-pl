@@ -13,10 +13,11 @@ libjson-perl libnet-pcap-perl libclone-perl
 ```
 
 ### on Windows
-On Windows, you can run this under WSL, but bear in mind that sniffing on network interfaces within WSL isn't easy, so you might want to parse already captured .pcap files
+On Windows, you can run this under WSL (same dependencies as bove), but bear in mind that sniffing on network interfaces within WSL isn't easy, so you might want to parse already captured .pcap files.
+
+Rumor has it that WSL 2 (with [Windows Kali](https://www.verboon.info/2019/12/setting-up-kali-in-windows-10-wsl-2-0/)) handles networking pretty well, but I haven't tested this yet.
 
 ```
-TODO
 ```
 
 ### Unit tests deps
